@@ -1,0 +1,123 @@
+
+syntax = "proto3";
+
+package ftl;
+
+service FTL {
+	rpc Hello (HelloRequest) returns (HelloReply) {}
+	rpc PullNodeIdList (PullNodeIdListRequest) returns (PullNodeIdListReply) {}
+	rpc PushNodeList (PushNodeListRequest) returns (PushNodeListReply) {}
+	rpc BroadcastNetList (BroadcastNetListRequest) returns (BroadcastNetListReply) {}
+	rpc QueryReady (QueryReadyRequest) returns (QueryReadyReply) {}
+	rpc GetStats (GetStatsRequest) returns (GetStatsReply) {}
+	rpc GetAccessLog (GetAccessLogRequest) returns (GetAccessLogReply) {}
+}
+
+message HelloRequest {
+	uint32 my_node_id = 1;
+	int64 local_time = 2;
+}
+
+message HelloReply {
+	uint32 my_node_id = 1;
+	int64 local_time = 2;
+	string addr6 = 3;
+}
+
+message PullNodeIdListRequest {
+	uint32 my_node_id = 1;
+}
+
+message PullNodeIdListReply {
+	uint32 my_node_id = 1;
+	repeated uint32 node_ids = 2;
+}
+
+message NodeEntry {
+	uint32 node_id = 1;
+	uint32 stats_hour_count = 2;
+	uint64 stats_hour_upload_nano_sec = 3;
+	uint64 stats_hour_upload_bytes = 4;
+	uint64 stats_hour_latency = 5;
+	uint32 stats_day_count = 6;
+	uint64 stats_day_upload_nano_sec = 7;
+	uint64 stats_day_upload_bytes = 8;
+	uint64 stats_day_latency = 9;
+	uint32 stats_week_count = 10;
+	uint64 stats_week_upload_nano_sec = 11;
+	uint64 stats_week_upload_bytes = 12;
+	uint64 stats_week_latency = 13;
+}
+
+message PushNodeListRequest {
+	uint32 my_node_id = 1;
+	repeated NodeEntry nodes = 2;
+	repeated uint32 padding = 3;
+}
+
+message PushNodeListReply {
+	uint32 my_node_id = 1;
+	int32 result_code = 2;
+}
+
+message Destination {
+	uint32 node_id = 1;
+	repeated uint32 nexthop_ids = 2;
+}
+
+message NetEntry {
+	uint32 net_id = 1;
+	uint32 stats_hour_count = 2;
+	uint64 stats_hour_download_nano_sec = 3;
+	uint64 stats_hour_download_bytes = 4;
+	uint32 stats_day_count = 5;
+	uint64 stats_day_download_nano_sec = 6;
+	uint64 stats_day_download_bytes = 7;
+	uint32 stats_week_count = 8;
+	uint64 stats_week_download_nano_sec = 9;
+	uint64 stats_week_download_bytes = 10;
+}
+
+message BroadcastNetListRequest {
+	uint32 my_node_id = 1;
+	repeated Destination destinations = 2;
+	repeated NetEntry nets = 3;
+}
+
+message BroadcastNetListReply {
+	uint32 my_node_id = 1;
+	int32 result_code = 2;
+}
+
+message QueryReadyRequest {
+	uint32 my_node_id = 1;
+	uint32 net_id = 2;
+	bool observation = 3;
+}
+
+message QueryReadyReply {
+	uint32 my_node_id = 1;
+	bool ready = 2;
+}
+
+message NodeContainer {
+	uint32 node_id = 1;
+	repeated NodeEntry remote_nodes = 2;
+	repeated NetEntry client_nets = 3;
+}
+
+message GetStatsRequest {
+}
+
+message GetStatsReply {
+	repeated NodeContainer nodes = 1;
+}
+
+message GetAccessLogRequest {
+	string date = 1;
+}
+
+message GetAccessLogReply {
+	repeated string lines = 1;
+}
+
